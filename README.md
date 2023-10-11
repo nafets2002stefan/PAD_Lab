@@ -48,7 +48,7 @@ Nowadays, almost every big company has implemented microservices into their apps
 ## Endpoints
 
 ### Register User
-POST request with the purpose of user registration. It sends a JSON payload containing a username and password for a user account creation.
+POST request with the purpose of user registration. It sends a grpc payload containing a username and password for a user account creation.
 #### Method: POST
 >```
 >http://localhost:9000/users/register
@@ -58,30 +58,30 @@ POST request with the purpose of user registration. It sends a JSON payload cont
 
 |Content-Type|Value|
 |---|---|
-|Content-Type|application/json|
-|Accept|application/json|
+|Content-Type|application/grpc|
+|Accept|application/grpc|
 
 #### Body
 
-```json
-{
-   "username": "example_user",
-  "password": "secure_password123"
+```Python
+message UserCredentials {
+  string username = stefan1@gmail.com;
+  string password = pass!23;
 }
 ```
 
 #### Response
 
-```json
-{
-    "message":"Successfully created"
-}
-```
+from your_generated_protobuf_file import ResponseMessage
+
+Create an instance of the ResponseMessage message:
+
+response_message = ResponseMessage(message="Successfully created")
 
 #### Authentication: no auth
 
 ### Login User
-A POST request tailored for user authentication is used to transmit a JSON payload to the server, containing a username and password, with the intention of logging in.
+A POST request tailored for user authentication is used to transmit a GRPC payload to the server, containing a username and password, with the intention of logging in.
 #### Method: POST
 >```
 >http://localhost:9000/users/login
@@ -90,23 +90,23 @@ A POST request tailored for user authentication is used to transmit a JSON paylo
 
 |Content-Type|Value|
 |---|---|
-|Content-Type|application/json|
-|Accept|application/json|
+|Content-Type|application/grpc|
+|Accept|application/grpc|
 
 #### Body
 
-```json
-{
-   "username": "example_user",
-   "password": "secure_password123"
+```Python
+message UserCredentials {
+  string username = stefan1@gmail.com;
+  string password = pass!23;
 }
 ```
 
 #### Response
 
-```json
-{
-    "access-token":"{{accessToken}}"
+```Python
+message AccessTokenMessage {
+  string access_token = "1dsdwe2e2dss";
 }
 ```
 
@@ -120,27 +120,28 @@ DELETE request intended to delete a user account, including authentication using
 
 |Content-Type|Value|
 |---|---|
-|Content-Type|application/json|
-|Accept|application/json|
+|Content-Type|application/grpc|
+|Accept|application/grpc|
 
 #### Body
 
-```json
-{
-    "password":"passwrod2232"
+```Python
+message UserCredentials {
+  string username = stefan1@gmail.com;
+  string password = pass!23;
 }
 ```
 
 #### Response
 
-```json
-{
-    "message":"Successfully deleted"
+```
+message ResponseMessage {
+  string response = "Successfully deleted";
 }
 ```
 
 ### Add item in  Shopping Cart
-POST request to create a shopping cart  for a specific user where he can add some items. It recieves all items which are available, adds them into cart and sends request to db to purchase all products in json format
+POST request to create a shopping cart  for a specific user where he can add some items. It recieves all items which are available, adds them into cart and sends request to db to purchase all products in grpc format
 #### Method: POST
 >```
 >http://localhost:8000/purchase
@@ -149,32 +150,26 @@ POST request to create a shopping cart  for a specific user where he can add som
 
 |Content-Type|Value|
 |---|---|
-|Content-Type|application/json|
-|Accept|application/json|
+|Content-Type|application/grpc|
+|Accept|application/grpc|
 
 #### Body
 
-```json
-{
-    "username":"test0",
-    "products": [
-        {"id": 1,
-        "name" : "test",
-        "category" : 2,
-        "price" : 34},
-        {"id": 2,
-        "name" : "test1",
-        "category" : 4,
-        "price" : 12}
-        ]
-}
+```Python
+product1 = Product(id=1, name="test", category=2, price=34)
+product2 = Product(id=2, name="test1", category=4, price=12)
+
+user_and_products = UserAndProducts(
+    username="test0",
+    products=[product1, product2]
+)
 ```
 
 #### Response
 
-```json
-{
-    "message":"Successfully purchased"
+```Python
+message ResponseMessage {
+  string response = "Successfully deleted";
 }
 ```
 
@@ -190,24 +185,32 @@ GET request to retrieve a user's history items purchased.
 
 |Content-Type|Value|
 |---|---|
-|Accept|application/json|
+|Accept|application/grpc|
 
 #### Response 
 
-```json
-{
-    "username": "tim",
-    "data" : [
-        {"date": "21:13:2023",
-        "purchase_id": 1,
-        "products_id": [2, 4, 6],
-        "price" : 34},
-        {"date": "21:13:2023",
-        "purchase_id": 1,
-        "products_id": [2, 4, 6],
-        "price" : 34
-    ]
-}
+```Python
+product_purchase1 = ProductPurchase(product_id=2)
+product_purchase2 = ProductPurchase(product_id=4)
+product_purchase3 = ProductPurchase(product_id=6)
+
+purchase1 = Purchase(
+    date="21:13:2023",
+    purchase_id=1,
+    product_purchases=[product_purchase1, product_purchase2, product_purchase3],
+    price=34.0
+)
+
+purchase2 = Purchase(
+    date="21:13:2023",
+    purchase_id=2,
+    product_purchases=[product_purchase1, product_purchase2, product_purchase3],
+    price=34.0)
+
+user_purchase = UserPurchase(
+    username="tim",
+    data=[purchase1, purchase2]
+)
 ```
 
 ### Get User's Shopping History
@@ -220,16 +223,18 @@ GET request to retrieve a user's specific purchase.
 
 |Content-Type|Value|
 |---|---|
-|Accept|application/json|
+|Accept|application/grpc|
 
 #### Response
 
-```json
+```Python
 
-{"date": "21:13:2023",
-    "purchase_id": 1,
-    "products_id": [2, 4, 6],
-    "price" : 34}
+message PurchaseResponse {
+  string date = 1;
+  int32 purchase_id = 2;
+  repeated int32 product_ids = 3;
+  float price = 4;
+}
 
 ```
 
@@ -243,14 +248,13 @@ DELETE request intended to delete a user's shopping history for a specified user
 
 |Content-Type|Value|
 |---|---|
-|Content-Type|application/json|
-|Accept|application/json|
+|Content-Type|application/grpc|
+|Accept|application/grpc|
 
 
 #### Response
 
-```json
-{
-    "message":"History purchase successfully deleted"
-}
+```Python
+response = DeleteHistoryResponse(message="History purchase successfully deleted")
+
 ```
