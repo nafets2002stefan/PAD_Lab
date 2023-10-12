@@ -1,2 +1,4 @@
 package-lock.json
 /node_modules
+src/__pycache__
+src/models/__pycache__

@@ -1,0 +1,5 @@
+DB_USERNAME = 'sa1'
+DB_PASSWORD = 'sa1'
+DB_SERVER = 'DESKTOP-60K7NJF'
+DB_NAME = 'pad_items'
+MSSQL_DRIVER = 'ODBC+Driver+17+for+SQL+Server'
