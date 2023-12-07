@@ -8,7 +8,6 @@ const PORT = 3000;
 app.use(express.json()); // Middleware to parse JSON requests
 
 const userServiceURL = 'http://127.0.0.1:5002/user';
-const cartServiceURL = 'http://127.0.0.1:5002/cart';
 const itemsServiceURL = 'http://127.0.0.1:5003/items';
 
 const axiosInstance = axios.create({
@@ -118,10 +117,10 @@ app.get('/api/items', limiter, async (req, res) => {
     }
   });
 
-  app.get('/api/cart/:user_id', limiter, async (req, res) => {
+  app.get('/api/user/:user_id/cart', limiter, async (req, res) => {
     const user_id = req.params.user_id;
     try {
-        const response = await axiosInstance.get(`${cartServiceURL}/${user_id}`);
+        const response = await axiosInstance.get(`${userServiceURL}/${user_id}/cart`);
       res.json(response.data);
     } catch (error) {
       if (error.response) {
@@ -134,10 +133,10 @@ app.get('/api/items', limiter, async (req, res) => {
     }
   });
 
-  app.post('/api/cart/:user_id', limiter, async (req, res) => {
+  app.post('/api/user/:user_id/cart', limiter, async (req, res) => {
     const user_id = req.params.user_id;
     try {
-        const response = await axiosInstance.post(`${cartServiceURL}/${user_id}`);
+        const response = await axiosInstance.post(`${userServiceURL}/${user_id}/cart`);
       res.json(response.data);
     } catch (error) {
       if (error.response) {
